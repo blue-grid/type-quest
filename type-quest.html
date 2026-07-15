@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Type Quest — Learn React + TypeScript</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0e1c; --bg2:#0f1327; --panel:#151a33; --panel2:#1b2140;
+  --line:#28305a; --line2:#39427a;
+  --ink:#eef1ff; --muted:#9aa3cf; --dim:#6b74a3;
+  --ts:#4d7cff;         /* TypeScript electric blue */
+  --react:#41e0ff;      /* React cyan */
+  --violet:#b18cff;
+  --gold:#ffca42; --green:#3ddc97; --rose:#ff6b81; --amber:#ffb24d;
+  --shadow:0 18px 50px rgba(0,0,0,.5);
+  --r:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(1200px 700px at 15% -10%, rgba(77,124,255,.16), transparent 60%),
+    radial-gradient(900px 600px at 110% 10%, rgba(65,224,255,.12), transparent 55%),
+    var(--bg);
+  color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif}
+code,pre,.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+button{font-family:inherit;cursor:pointer}
+::selection{background:rgba(77,124,255,.35)}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,rgba(11,14,28,.92),rgba(11,14,28,.7));
+  border-bottom:1px solid var(--line);
+}
+.topwrap{max-width:1080px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;font-family:'Space Grotesk';font-size:18px;letter-spacing:.2px}
+.logo{width:34px;height:34px;border-radius:9px;position:relative;flex:0 0 auto;
+  background:conic-gradient(from 210deg,var(--ts),var(--react),var(--violet),var(--ts));
+  box-shadow:0 0 22px rgba(77,124,255,.5)}
+.logo::after{content:'{ }';position:absolute;inset:0;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:700;font-size:13px;color:#0b0e1c}
+.brand small{display:block;font-family:'JetBrains Mono';font-weight:500;font-size:10px;color:var(--react);letter-spacing:2px;text-transform:uppercase}
+.spacer{flex:1}
+.stat{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);
+  padding:7px 12px;border-radius:11px;font-size:13px;font-weight:600}
+.stat .ic{font-size:15px;line-height:1}
+.stat b{font-family:'JetBrains Mono'}
+.iconbtn{background:var(--panel);border:1px solid var(--line);color:var(--ink);width:40px;height:40px;
+  border-radius:11px;display:grid;place-items:center;font-size:17px;transition:.15s}
+.iconbtn:hover{border-color:var(--line2);background:var(--panel2)}
+.rankbadge{font-size:11px;color:var(--dim);font-weight:600;letter-spacing:.4px}
+.xpbar{height:5px;background:var(--panel);position:relative;overflow:hidden}
+.xpfill{height:100%;width:0;background:linear-gradient(90deg,var(--ts),var(--react));
+  box-shadow:0 0 14px rgba(65,224,255,.7);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1080px;margin:0 auto;padding:26px 18px 90px}
+.hidden{display:none!important}
+
+/* ---------- hero ---------- */
+.hero{position:relative;border:1px solid var(--line);border-radius:22px;overflow:hidden;
+  background:linear-gradient(135deg,var(--panel),var(--bg2));padding:30px 28px;margin-bottom:26px}
+.hero::before{content:'';position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(rgba(77,124,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(77,124,255,.07) 1px,transparent 1px);
+  background-size:26px 26px;mask:radial-gradient(600px 260px at 80% 0%,#000,transparent)}
+.hero h1{font-size:clamp(26px,4.4vw,40px);margin:0 0 8px;line-height:1.05;position:relative}
+.hero h1 .g{background:linear-gradient(90deg,var(--react),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);margin:0;max-width:560px;position:relative;line-height:1.55}
+.hero .cta{position:relative;margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:1px solid var(--line2);background:var(--panel2);color:var(--ink);padding:11px 18px;border-radius:12px;
+  font-weight:600;font-size:14px;transition:.15s;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{transform:translateY(-1px);border-color:var(--react)}
+.btn.primary{background:linear-gradient(90deg,var(--ts),#3a63e0);border-color:transparent;
+  box-shadow:0 10px 26px rgba(77,124,255,.4)}
+.btn.primary:hover{box-shadow:0 12px 32px rgba(77,124,255,.55);border-color:transparent}
+.mini{font-size:12px;color:var(--dim);font-family:'JetBrains Mono';margin-top:14px;position:relative}
+
+/* ---------- worlds ---------- */
+.world{margin-bottom:30px}
+.worldhead{display:flex;align-items:center;gap:14px;margin:0 2px 16px}
+.wnum{width:46px;height:46px;flex:0 0 auto;border-radius:13px;display:grid;place-items:center;
+  font-family:'JetBrains Mono';font-weight:700;font-size:15px;color:#0b0e1c;position:relative}
+.wtitle{flex:1;min-width:0}
+.wtitle h2{margin:0;font-size:19px;letter-spacing:.2px}
+.wtitle .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+.wtitle .tag{font-family:'JetBrains Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase}
+.wprog{font-family:'JetBrains Mono';font-size:12px;color:var(--dim);white-space:nowrap;text-align:right}
+.wprog b{color:var(--ink)}
+.wtrack{height:6px;background:var(--panel);border-radius:99px;overflow:hidden;margin-top:6px;width:120px}
+.wtrack i{display:block;height:100%;border-radius:99px}
+
+.nodes{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:11px}
+.node{position:relative;aspect-ratio:1/1;border-radius:15px;border:1px solid var(--line);
+  background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  transition:.16s;overflow:hidden}
+.node .n{font-family:'JetBrains Mono';font-weight:700;font-size:19px}
+.node .lt{font-size:9.5px;color:var(--muted);text-align:center;padding:0 6px;line-height:1.15;
+  max-height:24px;overflow:hidden}
+.node.locked{opacity:.5;filter:grayscale(.5)}
+.node.locked .n{color:var(--dim)}
+.node.avail{cursor:pointer;border-color:var(--line2)}
+.node.avail:hover{transform:translateY(-3px);border-color:var(--react);box-shadow:0 12px 26px rgba(0,0,0,.4)}
+.node.current{cursor:pointer;border-color:transparent;background:linear-gradient(160deg,var(--panel2),var(--panel));
+  box-shadow:0 0 0 1.5px var(--react),0 0 26px rgba(65,224,255,.35)}
+.node.current::after{content:'';position:absolute;inset:0;border-radius:15px;
+  background:radial-gradient(120px 60px at 50% 0%,rgba(65,224,255,.25),transparent 70%)}
+.node.done{cursor:pointer}
+.node .lock{font-size:15px;opacity:.7}
+.node .stars{display:flex;gap:1px;font-size:9px;color:var(--gold);height:11px}
+.node .stars .off{color:var(--line2)}
+.node .flag{position:absolute;top:5px;right:6px;font-size:10px}
+
+/* ---------- puzzle screen ---------- */
+.play{max-width:760px;margin:0 auto}
+.crumb{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin-bottom:14px;flex-wrap:wrap}
+.crumb .back{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:7px 13px;border-radius:10px;font-weight:600;font-size:13px}
+.crumb .back:hover{border-color:var(--line2)}
+.crumb .chip{font-family:'JetBrains Mono';font-size:11px;padding:4px 9px;border-radius:8px;background:var(--panel);border:1px solid var(--line)}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.card .head{padding:18px 22px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,var(--panel2),var(--panel))}
+.card .head .lvl{font-family:'JetBrains Mono';font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--react)}
+.card .head h2{margin:5px 0 0;font-size:22px}
+.card .body{padding:22px}
+.teach{color:var(--muted);line-height:1.6;font-size:14.5px;margin:0 0 18px}
+.teach code{background:var(--bg2);border:1px solid var(--line);padding:1px 6px;border-radius:6px;color:var(--react);font-size:.86em}
+.qtext{font-weight:600;font-size:15.5px;margin:0 0 14px;line-height:1.5}
+
+/* code block */
+.codewrap{background:#0a0d1e;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:0 0 18px}
+.codebar{display:flex;align-items:center;gap:7px;padding:9px 13px;border-bottom:1px solid var(--line);background:#0c1024}
+.dot{width:11px;height:11px;border-radius:50%}
+.codebar .fn{margin-left:8px;font-family:'JetBrains Mono';font-size:11px;color:var(--dim)}
+pre.code{margin:0;padding:15px 16px;overflow-x:auto;font-family:'JetBrains Mono';font-size:13.5px;line-height:1.7;color:#c9d2ff}
+.tok-key{color:#ff8fb0;font-weight:500}
+.tok-type{color:#5fd0ff}
+.tok-str{color:#9cffb0}
+.tok-com{color:#5b6591;font-style:italic}
+.tok-num{color:#ffca7a}
+.tok-tag{color:#b18cff}
+.blank{display:inline-block;min-width:44px;padding:0 8px;border-bottom:2px dashed var(--gold);
+  color:var(--gold);text-align:center;border-radius:3px;background:rgba(255,202,66,.08)}
+
+/* options */
+.opts{display:grid;gap:10px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--panel2);color:var(--ink);
+  padding:13px 15px;border-radius:12px;font-size:14px;transition:.14s;display:flex;gap:12px;align-items:center;
+  font-family:'JetBrains Mono'}
+.opt:hover{border-color:var(--line2);background:#20264a}
+.opt .k{width:24px;height:24px;flex:0 0 auto;border-radius:7px;background:var(--panel);border:1px solid var(--line);
+  display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--muted)}
+.opt.sel{border-color:var(--react);box-shadow:0 0 0 1px var(--react)}
+.opt.correct{border-color:var(--green);background:rgba(61,220,151,.12)}
+.opt.correct .k{background:var(--green);color:#062015;border-color:transparent}
+.opt.wrong{border-color:var(--rose);background:rgba(255,107,129,.1)}
+.opt.wrong .k{background:var(--rose);color:#2a0710;border-color:transparent}
+.opt.disabled{pointer-events:none;opacity:.85}
+
+/* fill input */
+.fill{display:flex;gap:10px;flex-wrap:wrap}
+.fill input{flex:1;min-width:180px;background:#0a0d1e;border:1px solid var(--line2);color:var(--react);
+  font-family:'JetBrains Mono';font-size:15px;padding:13px 15px;border-radius:12px;outline:none}
+.fill input:focus{border-color:var(--react);box-shadow:0 0 0 2px rgba(65,224,255,.25)}
+.fill input.ok{border-color:var(--green);color:var(--green)}
+.fill input.bad{border-color:var(--rose);color:var(--rose)}
+
+.actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;align-items:center}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--muted);padding:11px 16px;border-radius:12px;font-weight:600;font-size:13.5px}
+.ghost:hover{border-color:var(--line2);color:var(--ink)}
+
+/* console feedback (compiler-style) */
+.console{margin-top:16px;border-radius:12px;border:1px solid var(--line);overflow:hidden;display:none}
+.console.show{display:block;animation:slidein .25s ease}
+@keyframes slidein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.console .cbar{font-family:'JetBrains Mono';font-size:11px;padding:8px 13px;letter-spacing:1px;text-transform:uppercase}
+.console.pass .cbar{background:rgba(61,220,151,.14);color:var(--green);border-bottom:1px solid rgba(61,220,151,.25)}
+.console.fail .cbar{background:rgba(255,107,129,.14);color:var(--rose);border-bottom:1px solid rgba(255,107,129,.25)}
+.console .cbody{padding:15px 16px;background:#0a0d1e}
+.console .cbody p{margin:0 0 8px;font-size:14px;line-height:1.6;color:var(--ink)}
+.console .cbody p:last-child{margin:0}
+.console .cbody code{font-family:'JetBrains Mono';background:#141a34;border:1px solid var(--line);padding:1px 6px;border-radius:5px;color:var(--react);font-size:.86em}
+.console .lesson{color:var(--muted)}
+.earned{display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap}
+.earned .st{font-size:22px;letter-spacing:3px;color:var(--gold)}
+.earned .st .o{color:var(--line2)}
+.earned .xp{font-family:'JetBrains Mono';font-size:13px;color:var(--react);font-weight:600}
+
+/* ---------- modal ---------- */
+.overlay{position:fixed;inset:0;z-index:60;background:rgba(6,8,18,.72);backdrop-filter:blur(6px);
+  display:grid;place-items:center;padding:20px}
+.modal{width:min(560px,100%);max-height:86vh;overflow:auto;background:var(--panel);border:1px solid var(--line2);
+  border-radius:18px;box-shadow:var(--shadow)}
+.modal .mh{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line)}
+.modal .mh h3{margin:0;font-size:18px}
+.modal .mb{padding:20px 22px}
+.badgegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.badge{border:1px solid var(--line);border-radius:13px;padding:14px;text-align:center;background:var(--panel2)}
+.badge.have{border-color:var(--gold);box-shadow:0 0 18px rgba(255,202,66,.18)}
+.badge .em{font-size:30px}
+.badge.have .em{filter:none}
+.badge:not(.have) .em{filter:grayscale(1);opacity:.35}
+.badge .bt{font-weight:700;font-size:13px;margin-top:6px}
+.badge .bd{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.3}
+.settingrow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);gap:14px}
+.settingrow:last-child{border:0}
+.settingrow .lab{font-weight:600;font-size:14px}
+.settingrow .lab small{display:block;color:var(--muted);font-weight:400;font-size:12px;margin-top:2px}
+.toggle{width:46px;height:26px;border-radius:99px;background:var(--panel2);border:1px solid var(--line2);position:relative;transition:.2s;flex:0 0 auto}
+.toggle.on{background:linear-gradient(90deg,var(--ts),var(--react));border-color:transparent}
+.toggle i{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+.toggle.on i{left:22px}
+textarea.code-io{width:100%;min-height:90px;background:#0a0d1e;border:1px solid var(--line2);color:var(--react);
+  font-family:'JetBrains Mono';font-size:12px;padding:11px;border-radius:10px;resize:vertical;outline:none}
+
+/* confetti */
+.confetti{position:fixed;top:-12px;width:10px;height:14px;z-index:80;pointer-events:none;border-radius:2px}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.9}}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(30px);z-index:90;
+  background:var(--panel2);border:1px solid var(--gold);color:var(--ink);padding:12px 18px;border-radius:13px;
+  font-weight:600;font-size:14px;display:flex;align-items:center;gap:10px;opacity:0;transition:.35s;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast .em{font-size:20px}
+
+.footer{max-width:1080px;margin:0 auto;padding:10px 18px 40px;color:var(--dim);font-size:12px;text-align:center}
+.footer code{font-family:'JetBrains Mono';color:var(--muted)}
+
+@media (max-width:560px){
+  .topwrap{gap:9px;padding:10px 13px}
+  .brand small{display:none}
+  .stat{padding:6px 9px;font-size:12px}
+  .hero{padding:22px 18px}
+  .nodes{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:9px}
+  .card .body{padding:17px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topwrap">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>Type Quest<small>React · TypeScript</small></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="stat" title="Solved levels"><span class="ic">🧩</span><b id="stSolved">0</b>/100</div>
+    <div class="stat" title="First-try streak"><span class="ic">🔥</span><b id="stStreak">0</b></div>
+    <div class="stat" title="Experience"><span class="ic">⚡</span><b id="stXp">0</b> XP</div>
+    <button class="iconbtn" id="btnBadges" title="Badges">🏅</button>
+    <button class="iconbtn" id="btnSettings" title="Settings">⚙️</button>
+  </div>
+  <div class="xpbar"><div class="xpfill" id="xpFill"></div></div>
+</div>
+
+<div class="wrap">
+  <!-- MAP VIEW -->
+  <div id="mapView">
+    <div class="hero">
+      <h1>Level up from <span class="g">syntax</span> to <span class="g">shipping</span>.</h1>
+      <p id="heroSub">100 hand-built puzzles take you from your first type annotation to advanced React patterns. Solve a challenge, unlock the concept behind it, and keep the streak alive.</p>
+      <div class="cta">
+        <button class="btn primary" id="btnPlay">▶ Continue quest</button>
+        <button class="btn" id="btnHowto">How it works</button>
+      </div>
+      <div class="mini" id="heroRank">Rank: Novice · next unlock at 500 XP</div>
+    </div>
+    <div id="worlds"></div>
+  </div>
+
+  <!-- PLAY VIEW -->
+  <div id="playView" class="hidden"></div>
+</div>
+
+<div class="footer">
+  Built as one HTML file · progress lives in this session — use <code>⚙ → Save code</code> to keep it.
+</div>
+
+<script id="levels" type="application/json">
+{
+ "worlds":[
+  {"t":"TypeScript Foundations","tag":"WORLD 01","sub":"Annotations, unions, aliases — the vocabulary of types.","c":"#4d7cff","d":"world of primitives"},
+  {"t":"The Type System","tag":"WORLD 02","sub":"Generics, keyof, mapped & utility types — TypeScript's real power.","c":"#7c6bff","d":"advanced types"},
+  {"t":"JSX & Components","tag":"WORLD 03","sub":"Elements, props, lists — how React describes UI.","c":"#41e0ff","d":"react basics"},
+  {"t":"State & Events","tag":"WORLD 04","sub":"useState, inputs, forms — making the UI react.","c":"#3ddc97","d":"interactivity"},
+  {"t":"The Hooks","tag":"WORLD 05","sub":"Effects, refs, context, reducers, custom hooks.","c":"#ffb24d","d":"hooks"},
+  {"t":"Typing React","tag":"WORLD 06","sub":"Props, events, refs and generic components, done right.","c":"#ff7eb6","d":"typed react"},
+  {"t":"Patterns & Performance","tag":"WORLD 07","sub":"memo, composition, suspense, race conditions — ship it.","c":"#ff6b81","d":"mastery"}
+ ],
+ "levels":[
+  {"w":0,"t":"Type annotations","b":"In TypeScript you declare a variable's type with a colon. The compiler then rejects any value of the wrong kind.","q":"Fill the blank so the value in quotes type-checks.","type":"fill","code":["let score: number = 10;","let title: ____ = 'Ada';"],"acc":["string"],"h":"Text wrapped in quotes has one specific primitive type.","e":"A colon after the name declares its type: <code>let title: string</code>. Assigning a number to it would be a compile error. Types are checked when compiling and fully erased at runtime — they cost nothing in the shipped JavaScript."},
+  {"w":0,"t":"Arrays","b":"An array type is the element type followed by []. Every item must match.","q":"Type an array that holds only numbers.","type":"fill","code":["let scores: ____ = [90, 88, 72];"],"acc":["number[]","Array<number>"],"h":"element type, then square brackets.","e":"<code>number[]</code> means 'array of numbers'. The alternative <code>Array&lt;number&gt;</code> is identical. Pushing a string would now be caught at compile time."},
+  {"w":0,"t":"Tuples","b":"A tuple is a fixed-length array where each position has its own type.","q":"Which type describes exactly [name, age]?","type":"mc","code":["const person = ['Ada', 36];","// want: first string, second number, length 2"],"opts":["[string, number]","string[] | number[]","(string | number)[]","[string, number, ...]"],"a":"[string, number]","h":"Positions are typed one by one inside the brackets.","e":"<code>[string, number]</code> locks both the order and the length. React's <code>useState</code> returns a tuple exactly like this: <code>[value, setValue]</code>."},
+  {"w":0,"t":"Object types","b":"You can describe an object's shape inline with braces.","q":"Complete the type of user's 'id' field.","type":"fill","code":["let user: { id: ____; name: string } = {","  id: 1, name: 'Ada'","};"],"acc":["number"],"h":"1 is not text.","e":"Object types list each property and its type: <code>{ id: number; name: string }</code>. Accessing a property you didn't declare — or forgetting one — becomes a compile error."},
+  {"w":0,"t":"Optional properties","b":"A ? after a property name makes it optional.","q":"Make 'nickname' optional.","type":"fill","code":["type User = {","  name: string;","  nickname____: string;","};"],"acc":["?"],"h":"One character, placed before the colon.","e":"<code>nickname?: string</code> means the field may be absent. Its type becomes <code>string | undefined</code>, so you must handle the undefined case before using it."},
+  {"w":0,"t":"Union types","b":"A union type (A | B) allows a value to be one of several types.","q":"Which type lets status be only these three strings?","type":"mc","code":["// status can be 'idle', 'loading', or 'done'"],"opts":["'idle' | 'loading' | 'done'","string[]","['idle','loading','done']","string & 'idle'"],"a":"'idle' | 'loading' | 'done'","h":"The pipe means 'or'. Each option is a literal string type.","e":"A union of string literals is TypeScript's answer to enums-lite. <code>type Status = 'idle' | 'loading' | 'done'</code> — any other string is rejected, and editors autocomplete the three options."},
+  {"w":0,"t":"Literal types","b":"A literal type is a single exact value used as a type.","q":"What is the type of the constant below?","type":"mc","code":["const dir = 'north';"],"opts":["'north'","string","char","North"],"a":"'north'","h":"const can't be reassigned, so TS keeps the exact value.","e":"Because <code>const</code> can never change, TS narrows the type to the literal <code>'north'</code> rather than widening to <code>string</code>. This is how union-of-literals types become useful."},
+  {"w":0,"t":"Type aliases","b":"The 'type' keyword gives any type a reusable name.","q":"Name this union type 'ID'.","type":"fill","code":["____ ID = string | number;"],"acc":["type"],"h":"The keyword that creates an alias.","e":"<code>type ID = string | number</code> lets you write <code>ID</code> anywhere instead of repeating the union. Aliases can name unions, objects, functions — anything."},
+  {"w":0,"t":"Interfaces","b":"An interface describes the shape of an object, similar to a type alias.","q":"Complete the interface keyword.","type":"fill","code":["____ Point {","  x: number;","  y: number;","}"],"acc":["interface"],"h":"The object-shape keyword unique to TS.","e":"<code>interface Point { x: number; y: number }</code>. Interfaces are ideal for object shapes and can be 'extended' or merged. For unions or primitives, reach for <code>type</code> instead."},
+  {"w":0,"t":"Function types","b":"You annotate a function's parameters and its return type.","q":"Give this add function its return type.","type":"fill","code":["function add(a: number, b: number): ____ {","  return a + b;","}"],"acc":["number"],"h":"Two numbers added give a…","e":"The type after the parameter list is the return type: <code>(a: number, b: number): number</code>. TS can often infer it, but writing it documents intent and catches mistakes inside the body."},
+  {"w":0,"t":"void","b":"A function that returns nothing has the return type 'void'.","q":"What return type fits a logger that returns nothing?","type":"mc","code":["function log(msg: string) {","  console.log(msg);","}"],"opts":["void","null","undefined","never"],"a":"void","h":"Nothing is returned, but it isn't an error either.","e":"<code>void</code> is the return type when a function produces no useful value. It's distinct from <code>never</code> (used for functions that never return at all, e.g. they always throw)."},
+  {"w":0,"t":"any vs unknown","b":"'any' disables checking; 'unknown' is the safe top type — you must narrow it before use.","q":"Which type forces you to check before using the value?","type":"mc","code":["let a: any;","let b: unknown;"],"opts":["unknown","any","both","neither"],"a":"unknown","h":"One of them keeps the guard rails on.","e":"<code>any</code> silently opts out of type safety — avoid it. <code>unknown</code> accepts any value too, but won't let you use it until you narrow the type with a check. Prefer <code>unknown</code> at the untyped edges of your app."},
+  {"w":0,"t":"Type assertions","b":"'as' tells the compiler to treat a value as a more specific type. You're taking responsibility for it.","q":"Assert the DOM node as an input element.","type":"fill","code":["const el = document.querySelector('#name') ____ HTMLInputElement;","el.value = 'Ada';"],"acc":["as"],"h":"The assertion keyword.","e":"<code>querySelector</code> returns <code>Element | null</code>; <code>as HTMLInputElement</code> narrows it so <code>.value</code> is allowed. Use assertions sparingly — they trust you over the compiler."},
+  {"w":0,"t":"Narrowing with typeof","b":"Inside an if-check, TypeScript narrows a union to the matching branch.","q":"What is the type of id inside this block?","type":"mc","code":["function f(id: string | number) {","  if (typeof id === 'string') {","    // id is ... here","  }","}"],"opts":["string","number","string | number","unknown"],"a":"string","h":"The guard already ruled out the other option.","e":"A <code>typeof</code> guard narrows the union: inside the <code>true</code> branch <code>id</code> is <code>string</code>, and in an <code>else</code> it would be <code>number</code>. This 'control-flow narrowing' is one of TS's smartest features."},
+
+  {"w":1,"t":"Enums","b":"An enum defines a set of named constants.","q":"Complete the enum keyword.","type":"fill","code":["____ Color { Red, Green, Blue }"],"acc":["enum"],"h":"The named-constant keyword.","e":"<code>enum Color { Red, Green, Blue }</code> assigns 0,1,2 by default. Many teams now prefer a union of string literals for zero runtime cost, but enums remain common in codebases."},
+  {"w":1,"t":"Intersection types","b":"An intersection (A & B) combines multiple types into one that has all their members.","q":"Which operator merges two object types into one?","type":"mc","code":["type Name = { name: string };","type Age = { age: number };","// combine into { name; age }"],"opts":["&","|","+","extends"],"a":"&","h":"'And', not 'or'.","e":"<code>type Person = Name & Age</code> yields an object requiring both <code>name</code> and <code>age</code>. Where <code>|</code> means 'either', <code>&</code> means 'both at once'."},
+  {"w":1,"t":"Generics","b":"A generic <T> is a type variable — a placeholder filled in when the function or type is used.","q":"Add the generic parameter to identity.","type":"fill","code":["function identity<____>(value: T): T {","  return value;","}"],"acc":["T"],"h":"By convention, a single capital letter.","e":"<code>function identity&lt;T&gt;(value: T): T</code> keeps the input and output type linked, whatever it is. Call it as <code>identity&lt;string&gt;('hi')</code> or let TS infer <code>T</code> from the argument."},
+  {"w":1,"t":"Generic constraints","b":"'extends' constrains a generic so it must have certain members.","q":"Constrain T so it must have a length property.","type":"fill","code":["function len<T ____ { length: number }>(x: T) {","  return x.length;","}"],"acc":["extends"],"h":"The keyword that limits what T can be.","e":"<code>T extends { length: number }</code> means 'T can be anything, as long as it has a length'. Now <code>x.length</code> is safe, and calling with a number would be rejected."},
+  {"w":1,"t":"keyof","b":"'keyof T' produces a union of T's property names as string literals.","q":"What is keyof User here?","type":"mc","code":["type User = { id: number; name: string };","type K = keyof User;"],"opts":["'id' | 'name'","string","number","{ id; name }"],"a":"'id' | 'name'","h":"It collects the keys, not the values.","e":"<code>keyof User</code> is <code>'id' | 'name'</code> — the union of key names. It's the foundation of type-safe property access, e.g. a <code>get(obj, key)</code> helper that only accepts real keys."},
+  {"w":1,"t":"Indexed access","b":"T[K] looks up the type of a property by its key.","q":"What is User['id']?","type":"mc","code":["type User = { id: number; name: string };","type X = User['id'];"],"opts":["number","'id'","string","User"],"a":"number","h":"Read the type stored at that key.","e":"Indexed access <code>User['id']</code> gives <code>number</code>. Combine with <code>keyof</code>: <code>User[keyof User]</code> is <code>number | string</code> — the union of all value types."},
+  {"w":1,"t":"Mapped types","b":"A mapped type builds a new type by iterating over keys with 'in'.","q":"Fill the operator that iterates over keys.","type":"fill","code":["type Flags<T> = {","  [K ____ keyof T]: boolean;","};"],"acc":["in"],"h":"The keyword used to loop keys in a mapped type.","e":"<code>[K in keyof T]</code> walks every key of T. Here each becomes a boolean, so <code>Flags&lt;User&gt;</code> is <code>{ id: boolean; name: boolean }</code>. Utility types like <code>Partial</code> are built this way."},
+  {"w":1,"t":"Conditional types","b":"A conditional type chooses between two types using 'extends ? :'.","q":"What does IsString<'hi'> resolve to?","type":"mc","code":["type IsString<T> = T extends string ? true : false;","type A = IsString<'hi'>;"],"opts":["true","false","boolean","'hi'"],"a":"true","h":"'hi' is a string, so pick the true branch.","e":"Conditional types read like a ternary at the type level: <code>T extends string ? true : false</code>. Since <code>'hi'</code> is a string, <code>A</code> is <code>true</code>. They power much of TS's advanced type logic."},
+  {"w":1,"t":"Partial<T>","b":"The built-in Partial<T> makes every property optional.","q":"Which utility makes all fields optional?","type":"mc","code":["type User = { id: number; name: string };","// want every field optional"],"opts":["Partial<User>","Optional<User>","Readonly<User>","Required<User>"],"a":"Partial<User>","h":"It 'partially' fills the object.","e":"<code>Partial&lt;User&gt;</code> gives <code>{ id?: number; name?: string }</code> — handy for update functions that accept only the fields being changed. Its opposite is <code>Required&lt;T&gt;</code>."},
+  {"w":1,"t":"Pick & Omit","b":"Pick<T,K> keeps chosen keys; Omit<T,K> removes them.","q":"Build a type with only 'name' from User.","type":"fill","code":["type User = { id: number; name: string; age: number };","type JustName = ____<User, 'name'>;"],"acc":["Pick"],"h":"You are selecting keys to keep.","e":"<code>Pick&lt;User, 'name'&gt;</code> is <code>{ name: string }</code>. <code>Omit&lt;User, 'name'&gt;</code> would keep everything except name. Both are built from mapped types + keyof."},
+  {"w":1,"t":"Record<K,V>","b":"Record<Keys, Value> builds an object type with those keys, each of the given value type.","q":"Type a lookup of role -> boolean.","type":"mc","code":["type Role = 'admin' | 'user';","// map each role to a boolean permission"],"opts":["Record<Role, boolean>","Map<Role, boolean>","{ Role: boolean }","Role[boolean]"],"a":"Record<Role, boolean>","h":"The utility that constructs objects from a key union.","e":"<code>Record&lt;Role, boolean&gt;</code> is <code>{ admin: boolean; user: boolean }</code>. It's the go-to for dictionaries and lookup tables with a known set of keys."},
+  {"w":1,"t":"Readonly<T>","b":"Readonly<T> makes all properties immutable to the type checker.","q":"Which stops reassignment of fields at compile time?","type":"mc","code":["type Point = { x: number; y: number };","const p: ____ = { x: 1, y: 2 };","// p.x = 5  -> should error"],"opts":["Readonly<Point>","Const<Point>","Frozen<Point>","Partial<Point>"],"a":"Readonly<Point>","h":"It marks every field read-only.","e":"<code>Readonly&lt;Point&gt;</code> makes <code>p.x = 5</code> a compile error. It's type-only — it doesn't freeze the object at runtime (that's <code>Object.freeze</code>)."},
+  {"w":1,"t":"Discriminated unions","b":"Give each union member a common literal 'tag' field; switching on it narrows the type.","q":"Which field lets TS narrow this union safely?","type":"mc","code":["type Shape =","  | { kind: 'circle'; r: number }","  | { kind: 'square'; side: number };"],"opts":["kind","r","side","shape"],"a":"kind","h":"The shared literal property is the discriminant.","e":"Switching on <code>shape.kind</code> narrows each branch so <code>r</code> or <code>side</code> is available. Discriminated unions are the cleanest way to model 'one of several shapes' — you'll reuse this for reducer actions."},
+  {"w":1,"t":"never & exhaustiveness","b":"In an exhaustive switch, the default branch's value has type 'never' — proof you handled every case.","q":"What type is x in the default branch if every case is handled?","type":"mc","code":["function area(s: Shape) {","  switch (s.kind) {","    case 'circle': return 1;","    case 'square': return 2;","    default: const x = s; // ?","  }","}"],"opts":["never","Shape","unknown","void"],"a":"never","h":"Nothing is left over once all cases are covered.","e":"If both kinds are handled, <code>s</code> narrows to <code>never</code> in <code>default</code>. Assigning it to a <code>never</code>-typed variable turns 'you forgot a case' into a compile error — a powerful safety net."},
+
+  {"w":2,"t":"JSX is an expression","b":"JSX looks like HTML but is really syntax for creating elements — it evaluates to a value you can return.","q":"What does this JSX describe?","type":"mc","code":["const el = <h1>Hello</h1>;"],"opts":["A React element (a description of UI)","A real DOM node","An HTML string","A CSS rule"],"a":"A React element (a description of UI)","h":"React builds a lightweight object, not the DOM directly.","e":"JSX compiles to calls that create React elements — plain objects describing what to render. React later turns them into real DOM. Because it's an expression, you can store it in a variable or return it from a function."},
+  {"w":2,"t":"className, not class","b":"In JSX, the HTML 'class' attribute is written 'className' because 'class' is a reserved word in JS.","q":"Fix the attribute name for CSS classes in JSX.","type":"fill","code":["const box = <div ____='card'>hi</div>;"],"acc":["className"],"h":"'class' is reserved in JavaScript.","e":"Use <code>className</code> in JSX. Similarly <code>for</code> becomes <code>htmlFor</code>. React maps these to the correct DOM attributes for you."},
+  {"w":2,"t":"Expressions in JSX","b":"Curly braces embed any JavaScript expression inside JSX.","q":"Insert the variable 'name' into the greeting.","type":"fill","code":["const name = 'Ada';","const el = <p>Hello, ____</p>;"],"acc":["{name}"],"h":"Wrap the variable in curly braces.","e":"Braces switch from markup to JavaScript: <code>&lt;p&gt;Hello, {name}&lt;/p&gt;</code>. You can put any expression inside — a variable, a call, a ternary — but not statements like <code>if</code>."},
+  {"w":2,"t":"Fragments","b":"A component returns one root. Fragments <>…</> group siblings without adding a DOM wrapper.","q":"Which returns two siblings without an extra div?","type":"mc","code":["// return an <h1> and a <p> together"],"opts":["<><h1/><p/></>","<h1/><p/>","[<h1/>, <p/>]","<div><h1/><p/></div>"],"a":"<><h1/><p/></>","h":"An empty tag pair groups without wrapping.","e":"<code>&lt;&gt;...&lt;/&gt;</code> is shorthand for <code>&lt;React.Fragment&gt;</code>. It lets a component return multiple elements while keeping the DOM clean — no wrapper <code>div</code> needed."},
+  {"w":2,"t":"Function components","b":"A component is a function that returns JSX. Its name must start with a capital letter.","q":"Which is a valid component definition?","type":"mc","code":["// a component named Hello"],"opts":["function Hello() { return <h1>Hi</h1>; }","function hello() { return <h1>Hi</h1>; }","const hello = <h1>Hi</h1>;","class hello { render() {} }"],"a":"function Hello() { return <h1>Hi</h1>; }","h":"React treats lowercase tags as HTML, capitalised as components.","e":"Components are capitalised functions returning JSX. React uses the case to tell components (<code>&lt;Hello /&gt;</code>) from DOM tags (<code>&lt;div /&gt;</code>). Lowercase would be treated as an unknown HTML element."},
+  {"w":2,"t":"Rendering a component","b":"You render a component by writing it as a JSX tag, self-closed if it has no children.","q":"Render the Hello component inside App.","type":"fill","code":["function App() {","  return <____ />;","}"],"acc":["Hello"],"h":"Use the component's name as a tag.","e":"<code>&lt;Hello /&gt;</code> renders the component. React calls the function, takes its returned JSX, and inserts it. Passing data is done via attributes, which become props."},
+  {"w":2,"t":"Props","b":"Props pass data from parent to child as attributes; the child receives them as one object.","q":"Read the 'name' prop inside Greeting.","type":"fill","code":["function Greeting(props) {","  return <p>Hi {props.____}</p>;","}","// <Greeting name='Ada' />"],"acc":["name"],"h":"It's a field on the props object, matching the attribute.","e":"An attribute <code>name='Ada'</code> arrives as <code>props.name</code>. Props are read-only inside the child — data flows one way, from parent down to child."},
+  {"w":2,"t":"Typing props","b":"In TS+React you describe the props object with a type or interface.","q":"Complete the props type for Greeting.","type":"fill","code":["type Props = { name: string };","function Greeting(props: ____) {","  return <p>Hi {props.name}</p>;","}"],"acc":["Props"],"h":"Reference the type you just defined.","e":"Annotating <code>props: Props</code> means React and your editor know <code>name</code> is a required string. Forgetting <code>&lt;Greeting /&gt;</code>'s name attribute now errors at the call site."},
+  {"w":2,"t":"Destructuring props","b":"It's common to destructure props in the parameter list for cleaner code.","q":"Destructure 'name' directly from props.","type":"fill","code":["function Greeting({ ____ }: { name: string }) {","  return <p>Hi {name}</p>;","}"],"acc":["name"],"h":"Pull the field out by its name in the braces.","e":"<code>function Greeting({ name }: Props)</code> pulls <code>name</code> out immediately, so you write <code>{name}</code> instead of <code>{props.name}</code>. Cleaner and the standard style."},
+  {"w":2,"t":"The children prop","b":"Whatever you put between a component's tags arrives as the special 'children' prop.","q":"Which prop holds the content between the tags?","type":"mc","code":["<Card>Hello there</Card>","// inside Card, 'Hello there' is...?"],"opts":["children","content","inner","body"],"a":"children","h":"It's a reserved prop name in React.","e":"<code>props.children</code> is 'Hello there'. Rendering <code>{children}</code> inside <code>Card</code> makes it a reusable wrapper. This is the heart of component composition."},
+  {"w":2,"t":"Default prop values","b":"Give a prop a default with destructuring defaults.","q":"Default 'count' to 0 when not passed.","type":"fill","code":["function Badge({ count = ____ }: { count?: number }) {","  return <span>{count}</span>;","}"],"acc":["0"],"h":"The value to fall back to.","e":"<code>{ count = 0 }</code> uses 0 when the prop is omitted. Pair it with an optional type <code>count?: number</code>. This replaced the old <code>defaultProps</code> for function components."},
+  {"w":2,"t":"Conditional rendering","b":"Use && to render something only when a condition is true.","q":"Show the badge only when isNew is true.","type":"fill","code":["{isNew ____ <span>New!</span>}"],"acc":["&&"],"h":"Logical AND short-circuits to render or skip.","e":"<code>{isNew &amp;&amp; &lt;span&gt;New!&lt;/span&gt;}</code> renders the span only when <code>isNew</code> is truthy. Beware: <code>{count &amp;&amp; ...}</code> with count 0 renders '0' — use a real boolean or a ternary."},
+  {"w":2,"t":"Ternary rendering","b":"A ternary chooses between two things to render.","q":"Render 'Bye' when loggedIn is false, else 'Hi'.","type":"mc","code":["{loggedIn ? <b>Hi</b> : ____}"],"opts":["<b>Bye</b>","else <b>Bye</b>","<b>Bye</b> : null","if <b>Bye</b>"],"a":"<b>Bye</b>","h":"The part after the colon is the 'false' branch.","e":"<code>{cond ? a : b}</code> is the standard way to switch between two outputs in JSX. Unlike <code>&amp;&amp;</code>, it always renders one of the two — no accidental falsy leaks."},
+  {"w":2,"t":"Rendering lists","b":"Turn an array into elements with .map().","q":"Which produces one <li> per item?","type":"mc","code":["const items = ['a','b','c'];","// render a list"],"opts":["items.map(i => <li>{i}</li>)","items.forEach(i => <li>{i}</li>)","items.filter(i => <li>{i}</li>)","<li>{items}</li>"],"a":"items.map(i => <li>{i}</li>)","h":"You need a new array of elements returned.","e":"<code>items.map(i =&gt; &lt;li&gt;{i}&lt;/li&gt;)</code> returns an array of elements React can render. <code>forEach</code> returns nothing, so it renders nothing — <code>map</code> is the tool for lists."},
+  {"w":2,"t":"Keys in lists","b":"Each list item needs a stable, unique 'key' so React can track it across renders.","q":"Add the key prop for each todo.","type":"fill","code":["todos.map(t => <li ____={t.id}>{t.text}</li>)"],"acc":["key"],"h":"The special prop React uses for list identity.","e":"<code>key={t.id}</code> gives React a stable identity for each item, so it can update the minimum when the list changes. Avoid using the array index as key for lists that reorder or delete."},
+
+  {"w":3,"t":"useState basics","b":"useState gives a component a piece of state and a setter to change it.","q":"Import the hook that stores component state.","type":"fill","code":["import { ____ } from 'react';","const [count, setCount] = useState(0);"],"acc":["useState"],"h":"The core state hook.","e":"<code>const [count, setCount] = useState(0)</code> returns the current value and a setter. Calling <code>setCount</code> re-renders the component with the new value. The <code>0</code> is the initial state."},
+  {"w":3,"t":"Reading & the setter","b":"The array from useState is [value, setValue]. You read the first, call the second to update.","q":"Which call updates the state to 5?","type":"mc","code":["const [count, setCount] = useState(0);"],"opts":["setCount(5)","count = 5","count(5)","setState(count, 5)"],"a":"setCount(5)","h":"Never assign to the value directly.","e":"Only the setter changes state: <code>setCount(5)</code>. Assigning <code>count = 5</code> does nothing useful and won't re-render. State is read-only except through its setter."},
+  {"w":3,"t":"Typing useState","b":"TS usually infers state type from the initial value; annotate when it can't.","q":"What type is 'count' inferred as?","type":"mc","code":["const [count, setCount] = useState(0);"],"opts":["number","0","any","string"],"a":"number","h":"Inferred from the initial value, then widened.","e":"From <code>useState(0)</code>, TS infers <code>number</code>. When the initial value is <code>null</code> or an empty array, provide the type explicitly: <code>useState&lt;User | null&gt;(null)</code>."},
+  {"w":3,"t":"Functional updates","b":"When new state depends on the old, pass a function to the setter.","q":"Increment safely based on the previous value.","type":"fill","code":["setCount(____ => prev + 1);"],"acc":["prev","p","c","prevCount"],"h":"The callback receives the latest state.","e":"<code>setCount(prev =&gt; prev + 1)</code> uses the guaranteed-latest value, avoiding stale-state bugs when several updates happen quickly. Prefer this whenever the next state depends on the current one."},
+  {"w":3,"t":"State is a snapshot","b":"Within one render, the state value is fixed. Setting it schedules the next render — it doesn't change the current variable.","q":"After setCount(1); setCount(2) in one handler, what renders?","type":"mc","code":["const [count, setCount] = useState(0);","function go() { setCount(1); setCount(2); }"],"opts":["2","1","3","0"],"a":"2","h":"Each call overwrites the last with a value.","e":"Both calls pass values, so the last wins: state becomes 2, and there's one re-render. State updates are batched. If you needed +1 then +1 you'd use functional updates instead."},
+  {"w":3,"t":"onClick handlers","b":"Pass a function to onClick. Pass the reference — don't call it.","q":"Which correctly wires the click handler?","type":"mc","code":["function handle() { setCount(c => c + 1); }"],"opts":["<button onClick={handle}>","<button onClick={handle()}>","<button onClick='handle'>","<button click={handle}>"],"a":"<button onClick={handle}>","h":"Passing handle() would call it during render.","e":"<code>onClick={handle}</code> passes the function to run on click. <code>onClick={handle()}</code> calls it immediately during render (wrong). To pass arguments, wrap it: <code>onClick={() =&gt; handle(id)}</code>."},
+  {"w":3,"t":"Typing event handlers","b":"React provides typed synthetic events; a button click is React.MouseEvent.","q":"Type the click event on a button.","type":"mc","code":["function onClick(e: ____) {","  console.log(e.currentTarget);","}"],"opts":["React.MouseEvent<HTMLButtonElement>","MouseEvent","Event","React.ClickEvent"],"a":"React.MouseEvent<HTMLButtonElement>","h":"React namespaces its synthetic events; specify the element.","e":"<code>React.MouseEvent&lt;HTMLButtonElement&gt;</code> types the event and knows <code>currentTarget</code> is a button. Often you can skip this by typing the prop as <code>onClick: () =&gt; void</code> and letting inference handle inline handlers."},
+  {"w":3,"t":"Controlled inputs","b":"A controlled input's value comes from state; onChange writes back to state.","q":"Which two props make an input controlled?","type":"mc","code":["<input ... />"],"opts":["value and onChange","defaultValue and onInput","text and onType","state and setState"],"a":"value and onChange","h":"React owns the value; the handler updates it.","e":"<code>value={text}</code> plus <code>onChange</code> makes React the single source of truth for the field. The input shows state, and typing updates state, which re-renders with the new value."},
+  {"w":3,"t":"onChange event type","b":"An input's change event is React.ChangeEvent<HTMLInputElement>, and the new text is e.target.value.","q":"Read the typed value from the change event.","type":"fill","code":["function onChange(e: React.ChangeEvent<HTMLInputElement>) {","  setText(e.target.____);","}"],"acc":["value"],"h":"The property holding the field's current text.","e":"<code>e.target.value</code> is the input's current string, correctly typed because you specified <code>HTMLInputElement</code>. This is the standard controlled-input update."},
+  {"w":3,"t":"Forms & preventDefault","b":"On submit, call e.preventDefault() to stop the browser's full page reload.","q":"Stop the default form submission.","type":"fill","code":["function onSubmit(e: React.FormEvent) {","  e.____();","  save();","}"],"acc":["preventDefault"],"h":"The method that cancels the browser's native action.","e":"<code>e.preventDefault()</code> keeps the page from reloading so React can handle the submit. Wire it via <code>&lt;form onSubmit={onSubmit}&gt;</code> and put your save logic after."},
+  {"w":3,"t":"Updating object state","b":"State is immutable — build a new object with spread instead of mutating.","q":"Update only the 'name' field immutably.","type":"mc","code":["const [user, setUser] = useState({ name:'', age:0 });"],"opts":["setUser({ ...user, name:'Ada' })","user.name = 'Ada'","setUser(user.name = 'Ada')","setUser({ name:'Ada' })"],"a":"setUser({ ...user, name:'Ada' })","h":"Copy the old fields, then override one.","e":"<code>{ ...user, name:'Ada' }</code> copies every field then overrides <code>name</code>, producing a new object. Mutating <code>user.name</code> won't re-render, and <code>{ name:'Ada' }</code> alone would drop <code>age</code>."},
+  {"w":3,"t":"Updating array state","b":"Add to an array by creating a new one — never push into the existing state array.","q":"Add 'newItem' to list immutably.","type":"mc","code":["const [list, setList] = useState<string[]>([]);"],"opts":["setList([...list, newItem])","list.push(newItem)","setList(list.push(newItem))","list = [...list, newItem]"],"a":"setList([...list, newItem])","h":"Spread the old items into a fresh array.","e":"<code>setList([...list, newItem])</code> makes a new array so React detects the change. To remove: <code>setList(list.filter(x =&gt; x !== item))</code>. Mutating with <code>push</code> won't trigger a render."},
+  {"w":3,"t":"Derived state","b":"Don't store what you can calculate. Compute values during render from existing state.","q":"Best way to show the item count of a list?","type":"mc","code":["const [items, setItems] = useState<string[]>([]);"],"opts":["const count = items.length","useState for count too","update count on every change","store count in a ref"],"a":"const count = items.length","h":"It can be recomputed each render for free.","e":"Compute <code>items.length</code> during render — no separate state needed. Extra state for derived values invites bugs where the two drift out of sync. Rule of thumb: if you can calculate it, don't store it."},
+  {"w":3,"t":"Lifting state up","b":"When two components need the same data, move the state to their closest common parent and pass it down.","q":"Two siblings must share a value. Where does the state live?","type":"mc","code":["<Parent>","  <Input/> <Display/>","</Parent>"],"opts":["In the shared Parent","Duplicated in both siblings","In a global variable","In the Input only"],"a":"In the shared Parent","h":"Find the nearest ancestor both can reach.","e":"Move the state to <code>Parent</code>, then pass the value and a setter down as props. This 'lifting state up' keeps siblings in sync through one source of truth — a core React data-flow pattern."},
+
+  {"w":4,"t":"useEffect basics","b":"useEffect runs code after render — for side effects like subscriptions, timers, or logging.","q":"Import the hook for side effects.","type":"fill","code":["import { ____ } from 'react';","useEffect(() => { document.title = 'Hi'; });"],"acc":["useEffect"],"h":"The side-effect hook.","e":"<code>useEffect(fn)</code> runs <code>fn</code> after the DOM updates. Use it for things outside React's world: the document title, event listeners, data fetching, timers."},
+  {"w":4,"t":"Dependency array","b":"The second argument controls when the effect re-runs: it runs again only when a listed value changes.","q":"Run the effect only when 'id' changes.","type":"fill","code":["useEffect(() => {","  fetchUser(id);","}, [____]);"],"acc":["id"],"h":"List the value the effect depends on.","e":"<code>[id]</code> means 'run on mount, then again whenever id changes'. An empty <code>[]</code> runs once on mount. Omitting the array entirely runs after every render."},
+  {"w":4,"t":"Run once on mount","b":"An empty dependency array runs the effect a single time after the first render.","q":"Which runs the effect exactly once?","type":"mc","code":["useEffect(() => { init(); }, ___);"],"opts":["[]","no second arg","[init]","null"],"a":"[]","h":"Empty list means 'no dependencies, run once'.","e":"<code>useEffect(fn, [])</code> runs once on mount — good for one-time setup. Note: any values from the component used inside should still be listed if they can change; <code>[]</code> promises they never do."},
+  {"w":4,"t":"Effect cleanup","b":"Return a function from an effect to clean up — React runs it before the next effect and on unmount.","q":"Where do you clear the interval you set?","type":"mc","code":["useEffect(() => {","  const t = setInterval(tick, 1000);","  // ??","}, []);"],"opts":["return () => clearInterval(t)","clearInterval(t) at the end","in a separate effect","you don't need to"],"a":"return () => clearInterval(t)","h":"The returned function is the cleanup.","e":"Returning <code>() =&gt; clearInterval(t)</code> tears down the timer when the component unmounts or before the effect re-runs. Skipping cleanup causes leaks and duplicate timers/listeners."},
+  {"w":4,"t":"Fetching data","b":"Data fetching is a side effect; do it in useEffect and store the result in state.","q":"Complete the effect that loads and stores data.","type":"fill","code":["useEffect(() => {","  fetch('/api').then(r => r.json()).then(____);","}, []);"],"acc":["setData"],"h":"Push the result into state.","e":"Fetch inside the effect and call <code>setData</code> with the result. Real apps also handle loading/error states and cancellation — you'll meet race-condition cleanup later in this world's advanced levels."},
+  {"w":4,"t":"useRef for the DOM","b":"useRef gives you a stable box; attach it to a DOM node via the ref attribute to reach it directly.","q":"Focus the input using a ref.","type":"fill","code":["const inputRef = useRef<HTMLInputElement>(null);","// ... <input ref={inputRef} />","inputRef.____.focus();"],"acc":["current"],"h":"The ref stores the node under one property.","e":"A ref's value lives at <code>.current</code>. After React attaches the node, <code>inputRef.current</code> is the input, so <code>inputRef.current.focus()</code> works. Guard for null since it starts as null."},
+  {"w":4,"t":"useRef for mutable values","b":"A ref can hold any mutable value that persists across renders WITHOUT causing a re-render when changed.","q":"Which is true about updating ref.current?","type":"mc","code":["const renders = useRef(0);","renders.current++;"],"opts":["It does not trigger a re-render","It re-renders like state","It resets each render","It is read-only"],"a":"It does not trigger a re-render","h":"Refs are the 'quiet' alternative to state.","e":"Changing <code>ref.current</code> never re-renders — perfect for timer IDs, previous values, or counters you don't display. Use state when a change should update the UI; use a ref when it shouldn't."},
+  {"w":4,"t":"createContext","b":"Context lets you share a value with a subtree without passing props through every level.","q":"Create a context with a default theme.","type":"fill","code":["const ThemeContext = ____('light');"],"acc":["createContext"],"h":"The factory that makes a context object.","e":"<code>createContext('light')</code> makes a context whose default is 'light'. Wrap part of your tree in <code>&lt;ThemeContext.Provider value={...}&gt;</code> and any descendant can read it — no prop drilling."},
+  {"w":4,"t":"useContext","b":"useContext reads the nearest Provider's value for a given context.","q":"Read the current theme from context.","type":"fill","code":["const theme = ____(ThemeContext);"],"acc":["useContext"],"h":"The hook that consumes a context.","e":"<code>useContext(ThemeContext)</code> returns the closest provider's value. It re-renders the component whenever that value changes. Together with a Provider it replaces deep prop threading."},
+  {"w":4,"t":"useReducer","b":"useReducer manages state via a reducer(state, action) function — great when updates get complex.","q":"Which call sets up a reducer?","type":"mc","code":["// reducer + initial state"],"opts":["useReducer(reducer, initialState)","useReducer(initialState)","useState(reducer)","reducer(useState())"],"a":"useReducer(reducer, initialState)","h":"Pass the reducer first, then the starting state.","e":"<code>const [state, dispatch] = useReducer(reducer, initialState)</code>. You call <code>dispatch(action)</code>; the reducer computes the next state from the current one. It centralises related transitions."},
+  {"w":4,"t":"Dispatching actions","b":"You update reducer state by dispatching an action object, usually with a 'type'.","q":"Dispatch an increment action.","type":"fill","code":["dispatch({ ____: 'increment' });"],"acc":["type"],"h":"The conventional discriminator field.","e":"<code>dispatch({ type: 'increment' })</code> sends an action; the reducer switches on <code>action.type</code> to return new state. Actions can carry extra data too, e.g. <code>{ type:'add', payload: item }</code>."},
+  {"w":4,"t":"Typing reducer actions","b":"Model actions as a discriminated union so the reducer is fully type-checked.","q":"Which action type is best for a reducer?","type":"mc","code":["// increment, or set to a number"],"opts":["{type:'inc'} | {type:'set'; value:number}","{ type: string; value?: any }","string","any"],"a":"{type:'inc'} | {type:'set'; value:number}","h":"Different actions carry different data — model that.","e":"A discriminated union like <code>{type:'inc'} | {type:'set'; value:number}</code> lets TS ensure each branch reads the right fields, and warns if you forget a case. This is why you learned discriminated unions earlier."},
+  {"w":4,"t":"useMemo","b":"useMemo caches an expensive computed value, recomputing only when its dependencies change.","q":"Memoize a costly calculation of 'total'.","type":"fill","code":["const total = ____(() => heavySum(items), [items]);"],"acc":["useMemo"],"h":"The hook that remembers a computed value.","e":"<code>useMemo(() =&gt; heavySum(items), [items])</code> recomputes only when <code>items</code> changes. Use it for genuinely expensive work — overusing it adds complexity without benefit."},
+  {"w":4,"t":"useCallback","b":"useCallback memoizes a function so its identity stays stable between renders.","q":"When is a stable function identity most useful?","type":"mc","code":["const onClick = useCallback(() => doThing(id), [id]);"],"opts":["Passing to a memoized child as a prop","Every function everywhere","Inside useState","To make code shorter"],"a":"Passing to a memoized child as a prop","h":"It matters when identity is compared downstream.","e":"<code>useCallback</code> keeps a function reference stable, which prevents a <code>React.memo</code> child from re-rendering just because the parent recreated the handler. Without such a consumer, it usually isn't worth it."},
+  {"w":4,"t":"Custom hooks","b":"A custom hook is a function starting with 'use' that composes other hooks to share logic.","q":"What must a custom hook's name start with?","type":"fill","code":["function ____Counter() {","  const [n, setN] = useState(0);","  return { n, inc: () => setN(c => c + 1) };","}"],"acc":["use"],"h":"React relies on this naming prefix.","e":"Custom hooks must be named <code>useSomething</code>. That prefix tells React (and its linter) that hook rules apply. They let you extract and reuse stateful logic across components without inheritance."},
+  {"w":4,"t":"Rules of hooks","b":"Hooks must be called at the top level of a component — never inside conditions, loops, or nested functions.","q":"Which usage breaks the rules of hooks?","type":"mc","code":["function C({on}) {","  if (on) { const [x] = useState(0); }","}"],"opts":["Calling useState inside an if","Calling useState at the top","Calling a custom hook","Using two useState calls"],"a":"Calling useState inside an if","h":"Hook order must be identical every render.","e":"Hooks rely on a consistent call order each render, so a conditional <code>useState</code> is illegal. Always call hooks unconditionally at the top; put the condition inside the hook or branch on its result instead."},
+
+  {"w":5,"t":"React.FC","b":"React.FC is a type for function components that implicitly includes children. Many teams now prefer typing props directly.","q":"What does React.FC add automatically to props?","type":"mc","code":["const C: React.FC<{ title: string }> = ...;"],"opts":["children","key","ref","nothing"],"a":"children","h":"It bundles in a common prop you didn't declare.","e":"Historically <code>React.FC</code> added an implicit <code>children</code>. Modern style often skips it and types the props object directly (declaring <code>children</code> when needed), for clearer, more explicit components."},
+  {"w":5,"t":"Typing children","b":"The type for anything renderable — elements, strings, numbers, arrays — is React.ReactNode.","q":"Give 'children' the right type.","type":"fill","code":["type Props = { children: React.____ };"],"acc":["ReactNode"],"h":"The broad 'anything renderable' type.","e":"<code>children: React.ReactNode</code> accepts elements, text, numbers, fragments, arrays, null. Use <code>ReactElement</code> only when you specifically require a single element."},
+  {"w":5,"t":"Typing callback props","b":"A prop that is a function is typed like any function type.","q":"Type an onClose prop that takes nothing and returns nothing.","type":"mc","code":["type Props = { onClose: ____ };"],"opts":["() => void","void","Function","() => any"],"a":"() => void","h":"No parameters, no return.","e":"<code>onClose: () =&gt; void</code> precisely types a no-arg callback. Avoid the loose <code>Function</code> type. For handlers with data: <code>onSelect: (id: number) =&gt; void</code>."},
+  {"w":5,"t":"Optional callback props","b":"Mark a handler optional with ?, then guard before calling it.","q":"Call the optional handler safely.","type":"fill","code":["type Props = { onDone?: () => void };","function C({ onDone }: Props) {","  onDone____();","}"],"acc":["?."],"h":"Optional-chaining call so it no-ops when undefined.","e":"<code>onDone?.()</code> calls the handler only if it exists — no crash when the prop is omitted. It's the concise alternative to <code>if (onDone) onDone()</code>."},
+  {"w":5,"t":"Discriminated props","b":"Model components with mutually exclusive prop sets as a union, discriminated by a field.","q":"Why use a discriminated union for props?","type":"mc","code":["type Props =","  | { as:'link'; href:string }","  | { as:'button'; onClick():void };"],"opts":["It enforces valid prop combinations","It makes props optional","It removes the need for types","It adds children"],"a":"It enforces valid prop combinations","h":"Some props only make sense together.","e":"A union keyed on <code>as</code> ensures a link requires <code>href</code> and a button requires <code>onClick</code> — you can't mix them. TS narrows by the <code>as</code> field, catching invalid combinations at compile time."},
+  {"w":5,"t":"Generic components","b":"Components can be generic, letting a prop's type flow to a callback's type.","q":"Add the generic parameter to List.","type":"fill","code":["function List<____>(props: {","  items: T[];","  render: (item: T) => React.ReactNode;","}) { /* ... */ }"],"acc":["T"],"h":"Same idea as generic functions.","e":"<code>function List&lt;T&gt;(...)</code> links <code>items: T[]</code> to <code>render: (item: T) =&gt; ...</code>. Pass a <code>User[]</code> and <code>item</code> is a <code>User</code> in the render callback — fully typed, reusable lists."},
+  {"w":5,"t":"forwardRef","b":"forwardRef lets a component accept a ref and forward it to a DOM node inside.","q":"Which API lets a custom component receive a ref?","type":"mc","code":["const Input = ____((props, ref) => (","  <input ref={ref} {...props} />","));"],"opts":["forwardRef","useRef","createRef","memo"],"a":"forwardRef","h":"It passes a ref THROUGH your component.","e":"<code>forwardRef</code> exposes an inner DOM node to a parent's ref. Type it as <code>forwardRef&lt;HTMLInputElement, Props&gt;</code>. (In the newest React, <code>ref</code> can also arrive as a normal prop.)"},
+  {"w":5,"t":"The null ref pattern","b":"DOM refs start as null, so their type includes null and you must check before using.","q":"Type a ref that will point to a div.","type":"mc","code":["const boxRef = useRef<____>(null);"],"opts":["HTMLDivElement","HTMLDivElement | null","div","Element"],"a":"HTMLDivElement","h":"Pass the element type; the hook handles the null.","e":"Write <code>useRef&lt;HTMLDivElement&gt;(null)</code>. The <code>.current</code> type becomes <code>HTMLDivElement | null</code>, so guard with <code>if (boxRef.current)</code> before touching it."},
+  {"w":5,"t":"ComponentProps","b":"React.ComponentProps<'button'> gives you all the native props of an element.","q":"Grab every native prop a button accepts.","type":"fill","code":["type BtnProps = React.____<'button'>;"],"acc":["ComponentProps"],"h":"The helper that reads an element's prop types.","e":"<code>React.ComponentProps&lt;'button'&gt;</code> includes <code>onClick</code>, <code>disabled</code>, <code>type</code>, and the rest — perfect for wrapper components that must accept everything a real button does."},
+  {"w":5,"t":"Extending element props","b":"Build a Button that accepts your props plus all native button props via intersection.","q":"Complete the props type for a custom Button.","type":"mc","code":["type Props = { variant: string } & React.____<'button'>;"],"opts":["ComponentProps","ReactNode","FC","Ref"],"a":"ComponentProps","h":"Merge your fields with the native ones.","e":"<code>{ variant: string } &amp; React.ComponentProps&lt;'button'&gt;</code> lets consumers pass <code>variant</code> and any real button attribute. Spread <code>{...rest}</code> onto the underlying <code>&lt;button&gt;</code> to forward them."},
+  {"w":5,"t":"Typing async handlers","b":"An async event handler still returns a promise; the handler prop type is usually just () => void.","q":"Which handler shape is idiomatic for onClick?","type":"mc","code":["async function save() { await api(); }"],"opts":["onClick={() => { save(); }}","onClick={save} typed as returns Promise","onClick={await save}","onClick={save()}"],"a":"onClick={() => { save(); }}","h":"Fire the async work; don't make the DOM await it.","e":"Wrap the async call so the handler's return stays <code>void</code>: <code>onClick={() =&gt; { save(); }}</code>. The DOM ignores returned promises, and this avoids TS complaints about a Promise-returning handler."},
+  {"w":5,"t":"satisfies operator","b":"'satisfies' checks a value against a type WITHOUT widening it — you keep the precise inferred type.","q":"Which keeps exact keys while checking the shape?","type":"mc","code":["const routes = {","  home:'/', about:'/about'","} ____ Record<string, string>;"],"opts":["satisfies","as","is","extends"],"a":"satisfies","h":"Validate, but don't lose literal precision.","e":"<code>satisfies Record&lt;string,string&gt;</code> verifies the shape yet keeps <code>routes.home</code> typed as the literal it is, so key autocomplete still works. <code>as</code> would assert (and could hide errors); <code>satisfies</code> only checks."},
+  {"w":5,"t":"Typing a context value","b":"Give createContext a type; a null default plus a hook guard is a common safe pattern.","q":"What's a safe default when there's no real value yet?","type":"mc","code":["const Ctx = createContext<User | ____>(null);"],"opts":["null","undefined only","{}","User"],"a":"null","h":"A missing value paired with a runtime guard.","e":"Type it as <code>User | null</code> with a <code>null</code> default, then write a custom hook that throws if used outside a Provider. That gives consumers a non-null value without repeating null checks everywhere."},
+
+  {"w":6,"t":"React.memo","b":"React.memo skips re-rendering a component when its props haven't changed.","q":"Wrap Row so it re-renders only on prop changes.","type":"fill","code":["const Row = React.____(function Row(props) {","  return <li>{props.text}</li>;","});"],"acc":["memo"],"h":"The higher-order component for memoization.","e":"<code>React.memo(Component)</code> does a shallow prop comparison and reuses the last render if nothing changed. It's for pure components that re-render often with the same props."},
+  {"w":6,"t":"Referential equality","b":"memo compares props shallowly, so a new object/function prop each render defeats it.","q":"Why might a memoized child still re-render every time?","type":"mc","code":["<Child onClick={() => go()} data={{x:1}} />"],"opts":["New function/object props each render","memo is broken","Children can't be memoized","State changed"],"a":"New function/object props each render","h":"Inline objects and functions are new every render.","e":"An inline <code>{{x:1}}</code> or <code>() =&gt; go()</code> is a fresh reference each render, so the shallow compare sees a change. Stabilise them with <code>useMemo</code>/<code>useCallback</code> for memo to help."},
+  {"w":6,"t":"Keys & reconciliation","b":"Keys tell React which item is which. A bad key (like index) can cause state to attach to the wrong row.","q":"Which key choice is safest for a reorderable list?","type":"mc","code":["items.map((it,i) => <Row key={?} .../>)"],"opts":["A stable unique id","The array index i","Math.random()","The item text"],"a":"A stable unique id","h":"It must be stable across renders and reorders.","e":"A stable unique id keeps identity correct when items move. Index keys break on reorder/delete; <code>Math.random()</code> changes every render (forcing full remounts). Text works only if it's guaranteed unique and stable."},
+  {"w":6,"t":"Composition over drilling","b":"Passing children avoids threading props through layers that don't use them.","q":"How do you avoid passing a prop through many layers?","type":"mc","code":["// Layout -> Sidebar -> Panel all just forward 'user'"],"opts":["Pass content via children / context","Prop-drill through every layer","Use global variables","Duplicate state"],"a":"Pass content via children / context","h":"Let the parent compose the tree, or share via context.","e":"Composition (<code>&lt;Layout&gt;&lt;Panel user={user}/&gt;&lt;/Layout&gt;</code>) or context removes the middle layers from the data path. Reach for context when many distant components need the same value."},
+  {"w":6,"t":"Render props","b":"A render prop is a function prop that a component calls to let the parent control rendering.","q":"What is 'children' here?","type":"mc","code":["<Mouse>{(pos) => <p>{pos.x}</p>}</Mouse>"],"opts":["A function that receives data and returns UI","A string","A component instance","An event"],"a":"A function that receives data and returns UI","h":"The child is a function, not markup.","e":"The component calls <code>children(pos)</code>, handing state to the parent's function to render. Render props share behaviour flexibly; today custom hooks often achieve the same more simply."},
+  {"w":6,"t":"Higher-order components","b":"A HOC is a function that takes a component and returns an enhanced component.","q":"What does a HOC return?","type":"mc","code":["const Enhanced = withAuth(Profile);"],"opts":["A new component","A hook","An element","A reducer"],"a":"A new component","h":"Component in, component out.","e":"<code>withAuth(Profile)</code> wraps <code>Profile</code> with extra behaviour and returns a new component. HOCs were the classic reuse pattern; custom hooks now cover most cases with less indirection."},
+  {"w":6,"t":"Error boundaries","b":"Error boundaries are class components that catch render-time errors in their subtree and show a fallback.","q":"Which can be an error boundary today?","type":"mc","code":["// catch errors thrown while rendering children"],"opts":["A class with componentDidCatch","Any function component","A useEffect","A try/catch in JSX"],"a":"A class with componentDidCatch","h":"This one capability still needs a class.","e":"Error boundaries use class lifecycle methods (<code>getDerivedStateFromError</code>/<code>componentDidCatch</code>). There's no hook equivalent yet, so most apps use one library-provided or hand-written class boundary near the top."},
+  {"w":6,"t":"lazy & Suspense","b":"React.lazy code-splits a component; Suspense shows a fallback while it loads.","q":"Wrap a lazily-loaded component to show a spinner.","type":"fill","code":["<React.____ fallback={<Spinner/>}>","  <LazyPage/>","</React.____>"],"acc":["Suspense"],"h":"The boundary that renders a fallback while waiting.","e":"<code>&lt;Suspense fallback={...}&gt;</code> displays the fallback until the lazy component (or data source) is ready. Combined with <code>React.lazy(() =&gt; import('./Page'))</code> it enables on-demand loading."},
+  {"w":6,"t":"Controlled vs uncontrolled","b":"Controlled inputs keep their value in React state; uncontrolled inputs keep it in the DOM (read via a ref).","q":"An input with only defaultValue and a ref is…","type":"mc","code":["<input defaultValue='Ada' ref={ref} />"],"opts":["Uncontrolled","Controlled","Invalid","Read-only"],"a":"Uncontrolled","h":"React isn't holding the value in state.","e":"With <code>defaultValue</code> + ref, the DOM owns the value — that's uncontrolled. Add <code>value</code> + <code>onChange</code> to make it controlled. Pick one model per field; mixing them warns."},
+  {"w":6,"t":"Debounce with effects","b":"Debounce by starting a timer in an effect and clearing it in cleanup, keyed on the value.","q":"Complete the debounce cleanup.","type":"fill","code":["useEffect(() => {","  const t = setTimeout(() => search(q), 300);","  return () => ____(t);","}, [q]);"],"acc":["clearTimeout"],"h":"Cancel the pending timer before the next run.","e":"Each keystroke changes <code>q</code>, re-running the effect; the cleanup <code>clearTimeout(t)</code> cancels the previous pending call, so <code>search</code> only fires 300ms after typing stops."},
+  {"w":6,"t":"Race conditions","b":"When a fetch depends on changing props, an older response can arrive after a newer one. Guard with a flag.","q":"How do you ignore a stale fetch response?","type":"mc","code":["useEffect(() => {","  let active = true;","  fetch(url).then(r => { if (active) set(r); });","  return () => { active = false; };","}, [url]);"],"opts":["A cancelled/active flag in cleanup","Fetch faster","Use a ref only","Nothing needed"],"a":"A cancelled/active flag in cleanup","h":"Mark the old effect run as no-longer-current.","e":"Setting <code>active = false</code> in cleanup makes stale responses no-op, so a slow earlier request can't overwrite a newer one. <code>AbortController</code> is the alternative that also cancels the request itself."},
+  {"w":6,"t":"Context performance","b":"Every consumer re-renders when a context value changes, so split rarely- and often-changing values into separate contexts.","q":"How do you limit needless context re-renders?","type":"mc","code":["// theme rarely changes; cursor position changes constantly"],"opts":["Split into separate contexts","Put everything in one context","Use more props","Disable context"],"a":"Split into separate contexts","h":"Isolate the fast-changing value.","e":"Separate contexts mean consumers only re-render for the value they actually use. Also memoize the provider's <code>value</code> object so it isn't a new reference every render, which would re-render all consumers."},
+  {"w":6,"t":"Colocate state","b":"Keep state as close as possible to where it's used; lift it only when truly shared.","q":"A value used by exactly one component should live…","type":"mc","code":["// where should local UI state live?"],"opts":["In that component","In the top-level App","In global context","In a ref"],"a":"In that component","h":"Don't lift what isn't shared.","e":"Colocating state limits how much re-renders. Lifting is for genuinely shared data; premature lifting spreads updates across the tree and hurts performance and clarity."},
+  {"w":6,"t":"The final assembly","b":"You've covered types, JSX, state, effects, hooks, typing, and patterns. One principle ties it together.","q":"What single idea underlies robust React + TypeScript apps?","type":"mc","code":["// state flows down, types describe the shapes,","// effects sync with the outside world"],"opts":["Model data with types; render it with predictable, one-way data flow","Use as many hooks as possible","Avoid TypeScript for speed","Mutate state directly"],"a":"Model data with types; render it with predictable, one-way data flow","h":"Types describe the data; React renders it predictably.","e":"Great apps describe their data precisely with types, drive the UI from that state through one-way flow, and reach outside only via well-scoped effects. Master that loop and everything else — memo, context, suspense — is just refinement. You finished all 100. Ship something! 🚀"}
+ ]
+}
+</script>
+
+<script>
+"use strict";
+/* =========================================================
+   Type Quest — engine
+   ========================================================= */
+const DATA = JSON.parse(document.getElementById('levels').textContent);
+const WORLDS = DATA.worlds;
+const LEVELS = DATA.levels;
+
+/* ---- session state (in-memory; export/import to persist) ---- */
+const state = {
+  stars: {},          // index -> star count (1..3)
+  solved: {},         // index -> true
+  attempts: {},       // index -> attempts used in current visit
+  hintUsed: {},       // index -> bool
+  unlockedUpTo: 0,    // highest unlocked level index
+  xp: 0,
+  streak: 0,
+  bestStreak: 0,
+  sound: true,
+  badges: {},
+};
+
+const RANKS = [
+  [0,'Novice'],[500,'Apprentice'],[1200,'Junior Dev'],[2400,'Developer'],
+  [4200,'Engineer'],[6500,'Senior Engineer'],[9000,'Architect'],[12000,'React Master']
+];
+function rankFor(xp){ let r=RANKS[0]; for(const x of RANKS){ if(xp>=x[0]) r=x; } return r; }
+function nextRank(xp){ for(const x of RANKS){ if(xp<x[0]) return x; } return null; }
+
+const BADGES = [
+  {id:'first',em:'🩸',t:'First Blood',d:'Solve level 1',test:s=>s.solved[0]},
+  {id:'w1',em:'🔷',t:'Type Speaker',d:'Finish World 1',test:s=>worldDone(s,0)},
+  {id:'w2',em:'🧬',t:'Type Wizard',d:'Finish World 2',test:s=>worldDone(s,1)},
+  {id:'w3',em:'⚛️',t:'JSX Native',d:'Finish World 3',test:s=>worldDone(s,2)},
+  {id:'w4',em:'🎛️',t:'State Handler',d:'Finish World 4',test:s=>worldDone(s,3)},
+  {id:'w5',em:'🪝',t:'Hooked',d:'Finish World 5',test:s=>worldDone(s,4)},
+  {id:'w6',em:'📐',t:'Strongly Typed',d:'Finish World 6',test:s=>worldDone(s,5)},
+  {id:'half',em:'🌗',t:'Halfway There',d:'Solve 50 levels',test:s=>solvedCount(s)>=50},
+  {id:'streak5',em:'🔥',t:'On Fire',d:'5 first-try streak',test:s=>s.bestStreak>=5},
+  {id:'streak10',em:'☄️',t:'Unstoppable',d:'10 first-try streak',test:s=>s.bestStreak>=10},
+  {id:'perfect',em:'💎',t:'Flawless',d:'Earn 3★ on 20 levels',test:s=>Object.values(s.stars).filter(v=>v===3).length>=20},
+  {id:'master',em:'🏆',t:'React Master',d:'Solve all 100 levels',test:s=>solvedCount(s)>=100},
+];
+
+function solvedCount(s){ return Object.keys(s.solved).length; }
+function worldIndexes(w){ const a=[]; LEVELS.forEach((l,i)=>{ if(l.w===w) a.push(i); }); return a; }
+function worldDone(s,w){ return worldIndexes(w).every(i=>s.solved[i]); }
+
+/* ---------- sound (tiny WebAudio blips) ---------- */
+let AC=null;
+function beep(freq,dur,type,vol){
+  if(!state.sound) return;
+  try{
+    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type||'sine'; o.frequency.value=freq;
+    g.gain.value=vol||0.06; o.connect(g); g.connect(AC.destination);
+    const t=AC.currentTime; o.start(t);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+(dur||0.15));
+    o.stop(t+(dur||0.15));
+  }catch(e){}
+}
+const sfx={
+  correct(){ beep(660,0.12,'triangle',0.07); setTimeout(()=>beep(990,0.16,'triangle',0.07),90); },
+  wrong(){ beep(180,0.2,'sawtooth',0.05); },
+  unlock(){ beep(520,0.1,'square',0.05); setTimeout(()=>beep(780,0.14,'square',0.05),100); },
+  badge(){ beep(880,0.12,'triangle',0.07); setTimeout(()=>beep(1320,0.2,'triangle',0.07),110); },
+};
+
+/* ---------- syntax highlighter ---------- */
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+const KW='const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|import|from|export|default|type|interface|extends|implements|new|as|keyof|typeof|instanceof|in|of|enum|readonly|public|private|protected|static|async|await|this|satisfies|infer|namespace|class|throw|try|catch|null|undefined|true|false';
+const PRIM='number|string|boolean|any|unknown|never|void|object|symbol|bigint';
+const RE = new RegExp(
+  '(\\/\\/[^\\n]*)'+
+  '|(\'(?:[^\'\\\\]|\\\\.)*\'|"(?:[^"\\\\]|\\\\.)*"|`(?:[^`\\\\]|\\\\.)*`)'+
+  '|(&lt;\\/?[A-Za-z][\\w.-]*)'+
+  '|\\b('+KW+')\\b'+
+  '|\\b('+PRIM+')\\b'+
+  '|\\b([A-Z][A-Za-z0-9_]*)\\b'+
+  '|\\b(\\d+(?:\\.\\d+)?)\\b','g');
+function highlight(src){
+  let out = esc(src).replace(RE,(m,com,str,tag,kw,prim,cap,num)=>{
+    if(com) return '<span class="tok-com">'+com+'</span>';
+    if(str) return '<span class="tok-str">'+str+'</span>';
+    if(tag) return '<span class="tok-tag">'+tag+'</span>';
+    if(kw)  return '<span class="tok-key">'+kw+'</span>';
+    if(prim)return '<span class="tok-type">'+prim+'</span>';
+    if(cap) return '<span class="tok-type">'+cap+'</span>';
+    if(num) return '<span class="tok-num">'+num+'</span>';
+    return m;
+  });
+  out = out.replace(/____/g,'<span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+  return out;
+}
+
+/* ---------- helpers ---------- */
+const $=(s,r)=>(r||document).querySelector(s);
+const el=(t,c,h)=>{ const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+function norm(s){ return String(s).trim().toLowerCase().replace(/\s+/g,''); }
+function starStr(n){ let o=''; for(let i=0;i<3;i++) o+= i<n?'★':'<span class="off">★</span>'; return o; }
+
+/* ---------- rendering: top stats ---------- */
+function refreshTop(){
+  $('#stSolved').textContent = solvedCount(state);
+  $('#stStreak').textContent = state.streak;
+  $('#stXp').textContent = state.xp;
+  const nr = nextRank(state.xp), r = rankFor(state.xp);
+  const prev = r[0], next = nr?nr[0]:r[0]+1;
+  const pct = nr ? Math.min(100,((state.xp-prev)/(next-prev))*100) : 100;
+  $('#xpFill').style.width = pct+'%';
+  $('#heroRank').textContent = nr
+    ? 'Rank: '+r[1]+' · '+(next-state.xp)+' XP to '+nr[1]
+    : 'Rank: '+r[1]+' · max rank reached';
+}
+
+/* ---------- rendering: world map ---------- */
+function renderMap(){
+  const host = $('#worlds'); host.innerHTML='';
+  WORLDS.forEach((w,wi)=>{
+    const idxs = worldIndexes(wi);
+    const done = idxs.filter(i=>state.solved[i]).length;
+    const block = el('div','world');
+
+    const head = el('div','worldhead');
+    const num = el('div','wnum'); num.style.background='linear-gradient(160deg,'+w.c+',#0b0e1c)';
+    num.style.boxShadow='0 0 22px '+w.c+'55'; num.textContent = String(wi+1).padStart(2,'0');
+    const title = el('div','wtitle',
+      '<div class="tag" style="color:'+w.c+'">'+w.tag+'</div>'+
+      '<h2>'+w.t+'</h2><div class="sub">'+w.sub+'</div>');
+    const prog = el('div','wprog','<b>'+done+'</b>/'+idxs.length+
+      '<div class="wtrack"><i style="width:'+(done/idxs.length*100)+'%;background:'+w.c+'"></i></div>');
+    head.append(num,title,prog);
+
+    const nodes = el('div','nodes');
+    idxs.forEach(i=>{
+      const lv = LEVELS[i];
+      const locked = i>state.unlockedUpTo;
+      const done2 = state.solved[i];
+      const current = i===state.unlockedUpTo && !done2;
+      let cls='node'; 
+      if(locked) cls+=' locked';
+      else if(done2) cls+=' done';
+      else if(current) cls+=' current';
+      else cls+=' avail';
+      const node = el('button',cls);
+      let inner = '<div class="n">'+(i+1)+'</div>';
+      if(locked){ inner += '<div class="lock">🔒</div>'; }
+      else {
+        inner += '<div class="lt">'+lv.t+'</div>';
+        if(done2) inner += '<div class="stars">'+starStr(state.stars[i]||1)+'</div>';
+        else inner += '<div class="stars">&nbsp;</div>';
+      }
+      if(done2) inner = '<div class="flag">✓</div>'+inner;
+      node.innerHTML = inner;
+      if(!locked) node.onclick = ()=>openLevel(i);
+      else node.onclick = ()=>toast('🔒','Finish level '+state.unlockedUpTo+' to unlock this');
+      nodes.append(node);
+    });
+
+    block.append(head,nodes);
+    host.append(block);
+  });
+  refreshTop();
+}
+
+/* ---------- rendering: a level ---------- */
+let view='map';
+function show(v){
+  view=v;
+  $('#mapView').classList.toggle('hidden', v!=='map');
+  $('#playView').classList.toggle('hidden', v!=='play');
+  if(v==='map') window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function openLevel(i){
+  const lv = LEVELS[i], w = WORLDS[lv.w];
+  state.attempts[i]=0; state.hintUsed[i]=false;
+  let selected=null, finished=false;
+
+  const host = $('#playView'); host.innerHTML='';
+  const play = el('div','play');
+
+  // breadcrumb
+  const crumb = el('div','crumb');
+  const back = el('button','back','← Map');
+  back.onclick=()=>{ renderMap(); show('map'); };
+  crumb.append(back,
+    el('span','chip','LEVEL '+(i+1)+' / 100'),
+    el('span','chip',w.tag),
+    el('span',null,w.t));
+  play.append(crumb);
+
+  // card
+  const card = el('div','card');
+  const head = el('div','head',
+    '<div class="lvl" style="color:'+w.c+'">'+w.t+' · Concept '+(i+1)+'</div>'+
+    '<h2>'+lv.t+'</h2>');
+  const body = el('div','body');
+
+  body.append(el('p','teach',lv.b));
+
+  // code block
+  if(lv.code && lv.code.length){
+    const cw = el('div','codewrap');
+    const bar = el('div','codebar');
+    bar.innerHTML='<span class="dot" style="background:#ff6b81"></span>'+
+      '<span class="dot" style="background:#ffca42"></span>'+
+      '<span class="dot" style="background:#3ddc97"></span>'+
+      '<span class="fn">'+(lv.type==='fill'?'puzzle.ts':'snippet.tsx')+'</span>';
+    const pre = el('pre','code', highlight(lv.code.join('\n')));
+    cw.append(bar,pre); body.append(cw);
+  }
+
+  body.append(el('p','qtext',lv.q));
+
+  // input area
+  let getAnswer, markResult;
+  if(lv.type==='mc'){
+    const opts = el('div','opts');
+    const shuffled = shuffle(lv.opts.slice());
+    const btns=[];
+    shuffled.forEach((o,k)=>{
+      const b = el('button','opt');
+      b.innerHTML='<span class="k">'+String.fromCharCode(65+k)+'</span><span>'+esc(o)+'</span>';
+      b.onclick=()=>{ if(finished) return; selected=o; btns.forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); };
+      btns.push(b); opts.append(b);
+    });
+    body.append(opts);
+    getAnswer=()=>selected;
+    markResult=(correct)=>{
+      btns.forEach(b=>{
+        b.classList.add('disabled');
+        const val=b.querySelector('span:last-child').textContent;
+        if(val===lv.a) b.classList.add('correct');
+        else if(val===selected && !correct) b.classList.add('wrong');
+      });
+    };
+  } else {
+    const fill = el('div','fill');
+    const inp = el('input');
+    inp.setAttribute('spellcheck','false'); inp.setAttribute('autocapitalize','off');
+    inp.setAttribute('autocomplete','off'); inp.placeholder='type the missing code…';
+    inp.onkeydown=(e)=>{ if(e.key==='Enter') checkBtn.click(); };
+    fill.append(inp); body.append(fill);
+    setTimeout(()=>inp.focus(),60);
+    getAnswer=()=>inp.value;
+    markResult=(correct)=>{ inp.disabled=true; inp.classList.add(correct?'ok':'bad'); };
+  }
+
+  // actions
+  const actions = el('div','actions');
+  const checkBtn = el('button','btn primary','Check answer');
+  const hintBtn = el('button','ghost','💡 Hint');
+  actions.append(checkBtn,hintBtn);
+  body.append(actions);
+
+  // console
+  const consoleBox = el('div','console');
+  body.append(consoleBox);
+
+  hintBtn.onclick=()=>{
+    if(finished) return;
+    state.hintUsed[i]=true;
+    hintBtn.disabled=true; hintBtn.textContent='💡 '+lv.h;
+    hintBtn.style.opacity=.8;
+  };
+
+  checkBtn.onclick=()=>{
+    if(finished) return;
+    const ans=getAnswer();
+    if(ans==null || (typeof ans==='string' && ans.trim()==='')){
+      toast('✏️','Pick or type an answer first'); return;
+    }
+    state.attempts[i]=(state.attempts[i]||0)+1;
+    let correct;
+    if(lv.type==='mc') correct = (ans===lv.a);
+    else correct = lv.acc.some(a=>norm(a)===norm(ans));
+
+    if(correct){
+      finished=true;
+      markResult(true);
+      sfx.correct();
+      checkBtn.textContent='Continue →';
+      hintBtn.style.display='none';
+      solveLevel(i);
+      const stars = computeStars(i);
+      // build console
+      consoleBox.className='console pass show';
+      consoleBox.innerHTML=
+        '<div class="cbar">✓ compiled — concept unlocked</div>'+
+        '<div class="cbody">'+
+          '<p class="lesson">'+lv.e+'</p>'+
+          '<div class="earned">'+
+            '<span class="st">'+starStr(stars)+'</span>'+
+            '<span class="xp">+'+lastXp+' XP</span>'+
+          '</div>'+
+        '</div>';
+      checkBtn.onclick=()=>{
+        const nxt=i+1;
+        if(nxt<LEVELS.length){ openLevel(nxt); }
+        else { renderMap(); show('map'); toast('🏆','You completed all 100 levels!'); confetti(120); }
+      };
+      confetti(stars>=3?60:34);
+      consoleBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+      refreshTop();
+    } else {
+      sfx.wrong();
+      state.streak=0; refreshTop();
+      consoleBox.className='console fail show';
+      const tip = lv.type==='fill' ? 'Check spelling and exact syntax.' : 'Not quite — try another option.';
+      consoleBox.innerHTML='<div class="cbar">✗ type error</div>'+
+        '<div class="cbody"><p>'+tip+' Attempt '+state.attempts[i]+'.</p>'+
+        (state.hintUsed[i]?'':'<p class="lesson">Stuck? Tap <b>💡 Hint</b>.</p>')+'</div>';
+      if(lv.type==='fill'){ const inp=$('.fill input',body); if(inp){ inp.classList.add('bad'); setTimeout(()=>inp.classList.remove('bad'),600);} }
+    }
+  };
+
+  card.append(head,body);
+  play.append(card);
+  host.append(play);
+  show('play');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function computeStars(i){
+  const att=state.attempts[i]||1, hint=state.hintUsed[i];
+  if(att===1 && !hint) return 3;
+  if(att<=2 && !hint) return 2;
+  if(att===1 && hint) return 2;
+  return 1;
+}
+
+let lastXp=0;
+function solveLevel(i){
+  const first = !state.solved[i];
+  const stars = computeStars(i);
+  const prev = state.stars[i]||0;
+  state.solved[i]=true;
+  if(stars>prev) state.stars[i]=stars;
+
+  // xp: base + star bonus (only award full on first solve; small on replay improve)
+  const base=80, bonus=stars*25;
+  lastXp = first ? base+bonus : Math.max(0,(stars-prev)*25);
+  state.xp += lastXp;
+
+  // streak (first-try, no hint)
+  if(first && state.attempts[i]===1 && !state.hintUsed[i]){
+    state.streak++; state.bestStreak=Math.max(state.bestStreak,state.streak);
+    if(state.streak===5||state.streak===10) toast('🔥','Streak '+state.streak+'! Keep going');
+  } else if(first){
+    state.streak=0;
+  }
+
+  // unlock next
+  if(i>=state.unlockedUpTo){ state.unlockedUpTo=Math.min(LEVELS.length-1,i+1); if(first) sfx.unlock(); }
+
+  // world complete?
+  if(first && worldDone(state,LEVELS[i].w)){
+    const w=WORLDS[LEVELS[i].w];
+    setTimeout(()=>{ toast('🎉','World complete: '+w.t); confetti(80); },500);
+  }
+  checkBadges();
+}
+
+function checkBadges(){
+  BADGES.forEach(b=>{
+    if(!state.badges[b.id] && b.test(state)){
+      state.badges[b.id]=true;
+      sfx.badge();
+      setTimeout(()=>toast(b.em,'Badge unlocked: '+b.t),300);
+    }
+  });
+}
+
+/* ---------- confetti ---------- */
+const COLORS=['#4d7cff','#41e0ff','#b18cff','#ffca42','#3ddc97','#ff6b81'];
+function confetti(n){
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  for(let k=0;k<n;k++){
+    const c=el('div','confetti');
+    c.style.left=Math.random()*100+'vw';
+    c.style.background=COLORS[k%COLORS.length];
+    c.style.transform='rotate('+Math.random()*360+'deg)';
+    const dur=2.4+Math.random()*1.6;
+    c.style.animation='fall '+dur+'s linear forwards';
+    c.style.animationDelay=(Math.random()*0.3)+'s';
+    if(Math.random()<.5) c.style.borderRadius='50%';
+    document.body.append(c);
+    setTimeout(()=>c.remove(),(dur+0.5)*1000);
+  }
+}
+
+/* ---------- toast ---------- */
+let toastTimer=null;
+function toast(em,msg){
+  let t=$('#toast');
+  if(!t){ t=el('div','toast'); t.id='toast'; document.body.append(t); }
+  t.innerHTML='<span class="em">'+em+'</span><span>'+msg+'</span>';
+  requestAnimationFrame(()=>t.classList.add('show'));
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ---------- modals ---------- */
+function modal(title, bodyEl){
+  const ov=el('div','overlay');
+  const m=el('div','modal');
+  const mh=el('div','mh','<h3>'+title+'</h3>');
+  const x=el('button','iconbtn','✕'); x.onclick=()=>ov.remove(); mh.append(x);
+  const mb=el('div','mb'); mb.append(bodyEl);
+  m.append(mh,mb); ov.append(m);
+  ov.onclick=(e)=>{ if(e.target===ov) ov.remove(); };
+  document.body.append(ov);
+  return ov;
+}
+
+function openBadges(){
+  const grid=el('div','badgegrid');
+  BADGES.forEach(b=>{
+    const have=!!state.badges[b.id];
+    const c=el('div','badge'+(have?' have':''));
+    c.innerHTML='<div class="em">'+b.em+'</div><div class="bt">'+b.t+'</div><div class="bd">'+b.d+'</div>';
+    grid.append(c);
+  });
+  const wrap=el('div');
+  const got=Object.keys(state.badges).length;
+  wrap.append(el('p','teach','Earned <b style="color:var(--gold)">'+got+'</b> of '+BADGES.length+' badges. Best first-try streak: <b style="color:var(--react)">'+state.bestStreak+'</b>.'));
+  wrap.append(grid);
+  modal('🏅 Badges',wrap);
+}
+
+function openSettings(){
+  const wrap=el('div');
+
+  const soundRow=el('div','settingrow');
+  soundRow.innerHTML='<div class="lab">Sound effects<small>Blips for correct, wrong, unlock</small></div>';
+  const tg=el('div','toggle'+(state.sound?' on':''));
+  tg.innerHTML='<i></i>';
+  tg.onclick=()=>{ state.sound=!state.sound; tg.classList.toggle('on',state.sound); if(state.sound) sfx.correct(); };
+  soundRow.append(tg); wrap.append(soundRow);
+
+  const saveRow=el('div','settingrow');
+  saveRow.innerHTML='<div class="lab">Save progress<small>Copy this code, paste it back later to restore</small></div>';
+  const sb=el('button','btn','Generate'); saveRow.append(sb); wrap.append(saveRow);
+  const ta=el('textarea','code-io'); ta.placeholder='Your save code appears here — or paste one and press Load.'; wrap.append(ta);
+  sb.onclick=()=>{ ta.value=btoa(unescape(encodeURIComponent(JSON.stringify(exportState())))); ta.select(); toast('💾','Progress code ready — copy it'); };
+
+  const loadRow=el('div','settingrow');
+  loadRow.innerHTML='<div class="lab">Load progress<small>Paste a code above, then load</small></div>';
+  const lb=el('button','btn','Load'); loadRow.append(lb); wrap.append(loadRow);
+  lb.onclick=()=>{
+    try{
+      const obj=JSON.parse(decodeURIComponent(escape(atob(ta.value.trim()))));
+      importState(obj); renderMap();
+      document.querySelector('.overlay').remove();
+      toast('✅','Progress restored');
+    }catch(e){ toast('⚠️','That code could not be read'); }
+  };
+
+  const resetRow=el('div','settingrow');
+  resetRow.innerHTML='<div class="lab">Reset everything<small>Clears all progress in this session</small></div>';
+  const rb=el('button','ghost','Reset'); rb.style.borderColor='var(--rose)'; rb.style.color='var(--rose)';
+  rb.onclick=()=>{ if(confirm('Reset all progress?')){ resetState(); renderMap(); document.querySelector('.overlay').remove(); toast('🔄','Progress reset'); } };
+  resetRow.append(rb); wrap.append(resetRow);
+
+  modal('⚙️ Settings',wrap);
+}
+
+function exportState(){
+  return { stars:state.stars, solved:state.solved, unlockedUpTo:state.unlockedUpTo,
+    xp:state.xp, streak:state.streak, bestStreak:state.bestStreak, badges:state.badges, sound:state.sound };
+}
+function importState(o){
+  state.stars=o.stars||{}; state.solved=o.solved||{}; state.unlockedUpTo=o.unlockedUpTo||0;
+  state.xp=o.xp||0; state.streak=o.streak||0; state.bestStreak=o.bestStreak||0;
+  state.badges=o.badges||{}; if(typeof o.sound==='boolean') state.sound=o.sound;
+}
+function resetState(){
+  state.stars={}; state.solved={}; state.attempts={}; state.hintUsed={};
+  state.unlockedUpTo=0; state.xp=0; state.streak=0; state.bestStreak=0; state.badges={};
+}
+
+/* ---------- how it works ---------- */
+function openHowto(){
+  const wrap=el('div');
+  wrap.innerHTML=
+    '<p class="teach">Each level teaches <b>one</b> React or TypeScript concept, then tests it with a small puzzle — either multiple choice or fill-in-the-blank.</p>'+
+    '<p class="teach"><b>Solve it</b> to unlock the next level and read the <b style="color:var(--react)">concept explanation</b> that appears in the console. Levels unlock in order, from plain type annotations up to Suspense and race conditions.</p>'+
+    '<p class="teach"><b>Stars:</b> ★★★ first try with no hint · ★★ second try or with a hint · ★ otherwise. Solve first-try (no hint) to build your 🔥 streak and earn XP toward higher ranks.</p>'+
+    '<p class="teach">Progress is kept for this browser session. To keep it longer, use <b>⚙ Settings → Save progress</b> and paste the code back later.</p>';
+  modal('How Type Quest works',wrap);
+}
+
+/* ---------- wire up ---------- */
+$('#btnPlay').onclick=()=>openLevel(state.unlockedUpTo);
+$('#btnHowto').onclick=openHowto;
+$('#btnBadges').onclick=openBadges;
+$('#btnSettings').onclick=openSettings;
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const o=$('.overlay'); if(o) o.remove(); else if(view==='play'){ renderMap(); show('map'); } } });
+
+renderMap();
+show('map');
+</script>
+</body>
+</html>
